@@ -115,27 +115,27 @@ src="fotos/foto1.jpg"/>
                 ATRAÇÕES
             </h3>
 <div class="flex justify-center gap-4 px-6 pb-4">
-<div class="shrink-0 group">
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Beck" data-dj-image="fotos/beck.jpeg">
 <div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-primary to-transparent">
-<img alt="DJ portrait" class="w-full h-full rounded-full object-cover  transition-all" data-alt="Professional DJ profile picture" 
+<img alt="DJ Beck" class="w-full h-full rounded-full object-cover transition-all" data-alt="Professional DJ profile picture" 
 src="fotos/beck.jpeg"/>
 </div>
 <p class="text-center mt-2 text-xs font-bold text-white">DJ Beck</p>
-</div>
-<div class="shrink-0 group">
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Nem" data-dj-image="fotos/nem.PNG">
 <div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-accent to-transparent">
-<img alt="DJ portrait" class="w-full h-full rounded-full object-cover  transition-all" data-alt="Female DJ performing" 
-src="fotos/alex.jpeg"/>
+<img alt="DJ Nem" class="w-full h-full rounded-full object-cover transition-all" data-alt="Female DJ performing" 
+src="fotos/nem.PNG"/>
 </div>
-<p class="text-center mt-2 text-xs font-bold text-white">Alex DJ</p>
-</div>
-<div class="shrink-0 group">
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Nem</p>
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Daninho Pro Mix" data-dj-image="fotos/daninho.jpeg">
 <div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-secondary to-transparent">
-<img alt="DJ portrait" class="w-full h-full rounded-full object-cover  transition-all" data-alt="EDM Artist profile" 
+<img alt="DJ Daninho Pro Mix" class="w-full h-full rounded-full object-cover transition-all" data-alt="EDM Artist profile" 
 src="fotos/daninho.jpeg"/>
 </div>
 <p class="text-center mt-2 text-xs font-bold text-white">DJ Daninho Pro Mix</p>
-</div>
+</button>
 </div>
 </section>
 <!-- Ticket Selection -->
@@ -220,12 +220,24 @@ Vem com o par e economiza!</p>
 </section>
 
 </main>
+<!-- DJ Modal -->
+<div id="dj-modal" class="fixed inset-0 z-50 hidden bg-black/70 flex items-center justify-center p-6">
+<div class="glass rounded-2xl p-6 max-w-xs w-full mx-auto text-center relative border border-white/20">
+<button id="dj-modal-close" type="button" class="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 focus:outline-none">
+<span class="material-symbols-outlined text-white text-sm">close</span>
+</button>
+<div class="w-40 h-40 rounded-full p-1.5 bg-gradient-to-tr from-primary via-accent to-secondary mx-auto mb-4">
+<img id="dj-modal-image" alt="DJ" class="w-full h-full rounded-full object-cover" src=""/>
+</div>
+<p id="dj-modal-name" class="text-lg font-bold text-white"></p>
+</div>
+</div>
 <!-- Fixed Bottom CTA -->
 <div class="fixed bottom-0 left-0 right-0 p-6 z-50 glass border-t border-white/10">
 <div class="max-w-md mx-auto flex items-center gap-4">
 <div class="shrink-0">
 <p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Total</p>
-<p id="total-value" class="text-xl font-bold text-white">Selecione um ingresso</p>
+<p id="total-value" class="text-xl font-bold text-white">Selecione o ingresso</p>
 </div>
 <button id="checkout-button" class="flex-1 h-14 bg-gradient-to-r from-primary via-[#d946ef] to-secondary rounded-2xl font-black uppercase tracking-widest text-white shadow-[0_0_25px_rgba(175,37,244,0.6)] flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
                 Finalizar
@@ -238,6 +250,12 @@ Vem com o par e economiza!</p>
         const ticketCards = document.querySelectorAll('.ticket-card');
         const totalValueEl = document.getElementById('total-value');
         const checkoutButton = document.getElementById('checkout-button');
+
+        const djCards = document.querySelectorAll('.dj-card');
+        const djModal = document.getElementById('dj-modal');
+        const djModalImage = document.getElementById('dj-modal-image');
+        const djModalName = document.getElementById('dj-modal-name');
+        const djModalClose = document.getElementById('dj-modal-close');
 
         // Contador regressivo até 4 de abril de 2026 às 22h (horário local do navegador)
         const countHoursEl = document.getElementById('count-hours');
@@ -354,6 +372,49 @@ Vem com o par e economiza!</p>
                 window.open(url, '_blank');
             });
         }
+
+        function openDjModal(name, imageSrc) {
+            if (!djModal || !djModalImage || !djModalName) return;
+
+            djModalName.textContent = name || '';
+            djModalImage.src = imageSrc || '';
+            djModalImage.alt = name || 'DJ';
+
+            djModal.classList.remove('hidden');
+        }
+
+        function closeDjModal() {
+            if (!djModal) return;
+            djModal.classList.add('hidden');
+        }
+
+        djCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const name = card.dataset.djName || (card.querySelector('p') ? card.querySelector('p').textContent.trim() : '');
+                const imgEl = card.querySelector('img');
+                const imageSrc = card.dataset.djImage || (imgEl ? imgEl.getAttribute('src') : '');
+
+                openDjModal(name, imageSrc);
+            });
+        });
+
+        if (djModalClose) {
+            djModalClose.addEventListener('click', closeDjModal);
+        }
+
+        if (djModal) {
+            djModal.addEventListener('click', (event) => {
+                if (event.target === djModal) {
+                    closeDjModal();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDjModal();
+            }
+        });
     })();
 </script>
 </body></html>
