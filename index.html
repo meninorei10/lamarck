@@ -48,6 +48,24 @@
         ::-webkit-scrollbar {
             display: none;
         }
+        
+        /* Carousel Auto-scroll */
+        .carousel-track {
+            display: flex;
+            width: max-content;
+            animation: scroll-carousel 20s linear infinite;
+        }
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-carousel {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-50% - 12px));
+            }
+        }
     </style>
 <style>
     body {
@@ -66,7 +84,7 @@
 </button>
 </nav>
 
-<main class="pt-16 pb-32">
+<main class="pt-16 pb-40">
 <!-- Hero Section -->
 <section class="relative w-full aspect-[4/5] md:aspect-video flex flex-col justify-end p-6 overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/40 to-transparent z-10"></div>
@@ -109,12 +127,13 @@ src="fotos/foto1.jpg"/>
 </div>
 </section>
 <!-- Line-up -->
-<section class="mt-10">
+<section class="mt-10 overflow-hidden">
 <h3 class="px-6 mb-4 font-bold text-lg flex items-center gap-2">
 <span class="material-symbols-outlined text-accent">graphic_eq</span>
                 ATRAÇÕES
             </h3>
-<div class="flex justify-center gap-4 px-6 pb-4">
+<div class="carousel-track gap-6 px-6 pb-4">
+<!-- Original items -->
 <button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Beck" data-dj-image="fotos/beck.jpeg">
 <div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-primary to-transparent">
 <img alt="DJ Beck" class="w-full h-full rounded-full object-cover transition-all" data-alt="Professional DJ profile picture" 
@@ -135,6 +154,42 @@ src="fotos/nem.PNG"/>
 src="fotos/daninho.jpeg"/>
 </div>
 <p class="text-center mt-2 text-xs font-bold text-white">DJ Daninho Pro Mix</p>
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Jonathaz" data-dj-image="fotos/jhonataz.webp">
+<div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-secondary to-transparent">
+<img alt="DJ Jonathaz" class="w-full h-full rounded-full object-cover transition-all" data-alt="EDM Artist profile" 
+src="fotos/jhonataz.webp"/>
+</div>
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Jonathaz</p>
+</button>
+<!-- Duplicated items for infinite scroll -->
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Beck" data-dj-image="fotos/beck.jpeg">
+<div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-primary to-transparent">
+<img alt="DJ Beck" class="w-full h-full rounded-full object-cover transition-all" data-alt="Professional DJ profile picture" 
+src="fotos/beck.jpeg"/>
+</div>
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Beck</p>
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Nem" data-dj-image="fotos/nem.PNG">
+<div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-accent to-transparent">
+<img alt="DJ Nem" class="w-full h-full rounded-full object-cover transition-all" data-alt="Female DJ performing" 
+src="fotos/nem.PNG"/>
+</div>
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Nem</p>
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Daninho Pro Mix" data-dj-image="fotos/daninho.jpeg">
+<div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-secondary to-transparent">
+<img alt="DJ Daninho Pro Mix" class="w-full h-full rounded-full object-cover transition-all" data-alt="EDM Artist profile" 
+src="fotos/daninho.jpeg"/>
+</div>
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Daninho Pro Mix</p>
+</button>
+<button type="button" class="shrink-0 group dj-card cursor-pointer focus:outline-none" data-dj-name="DJ Jonathaz" data-dj-image="fotos/jhonataz.webp">
+<div class="w-24 h-24 rounded-full p-0.5 bg-gradient-to-tr from-secondary to-transparent">
+<img alt="DJ Jonathaz" class="w-full h-full rounded-full object-cover transition-all" data-alt="EDM Artist profile" 
+src="fotos/jhonataz.webp"/>
+</div>
+<p class="text-center mt-2 text-xs font-bold text-white">DJ Jonathaz</p>
 </button>
 </div>
 </section>
@@ -233,7 +288,7 @@ Vem com o par e economiza!</p>
 </div>
 </div>
 <!-- Fixed Bottom CTA -->
-<div class="fixed bottom-0 left-0 right-0 p-6 z-50 glass border-t border-white/10">
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] z-[100] bg-background-dark/95 backdrop-blur-xl border-t border-white/10" style="position: fixed !important;">
 <div class="max-w-md mx-auto flex items-center gap-4">
 <div class="shrink-0">
 <p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Total</p>
