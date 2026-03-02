@@ -209,6 +209,14 @@ src="fotos/jhonataz.webp"/>
 </div>
 <p class="text-sm text-slate-400">
 Entre, aproveite a vibe e deixe a noite acontecer.</p>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-xs uppercase tracking-wide text-slate-400">Quantidade</span>
+<div class="flex items-center gap-2">
+<button type="button" class="qty-minus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Diminuir quantidade">-</button>
+<span class="qty-value min-w-[2ch] text-center font-bold text-white">1</span>
+<button type="button" class="qty-plus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Aumentar quantidade">+</button>
+</div>
+</div>
                     </div>
 </div>
 <!-- VIP Card (Recommended) -->
@@ -230,6 +238,14 @@ Vem com o par e economiza!</p>
                         Promoção valida até 15/03 .
                     </div>
 </div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-xs uppercase tracking-wide text-slate-400">Quantidade</span>
+<div class="flex items-center gap-2">
+<button type="button" class="qty-minus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Diminuir quantidade">-</button>
+<span class="qty-value min-w-[2ch] text-center font-bold text-white">1</span>
+<button type="button" class="qty-plus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Aumentar quantidade">+</button>
+</div>
+</div>
 </div>
 
 <!-- Backstage Card -->
@@ -249,6 +265,14 @@ Vem com o par e economiza!</p>
 <span class="material-symbols-outlined text-sm text-primary">check_circle</span>
                         A experiência completa da noite 🔥
                     </div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-xs uppercase tracking-wide text-slate-300">Quantidade</span>
+<div class="flex items-center gap-2">
+<button type="button" class="qty-minus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Diminuir quantidade">-</button>
+<span class="qty-value min-w-[2ch] text-center font-bold text-white">1</span>
+<button type="button" class="qty-plus h-8 w-8 rounded-full border border-white/20 text-white flex items-center justify-center hover:bg-white/10" aria-label="Aumentar quantidade">+</button>
+</div>
+</div>
 </div>
 </section>
 
@@ -360,15 +384,18 @@ Vem com o par e economiza!</p>
         function getWhatsappMessage(ticket) {
             if (!ticket) return '';
 
+            const quantity = Math.max(1, Number(ticket.quantity) || 1);
+            const total = ticket.price * quantity;
+
             switch (ticket.id) {
                 case 'individual':
-                    return `Olá! Quero 1 Ingresso Individual (R$ ${formatPriceBRL(ticket.price)}) para o Baile do Menino Rei.`;
+                    return `Olá! Quero ${quantity} Ingresso(s) Individual(is) (R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 case 'casadinha-15':
-                    return `Olá! Quero a Casadinha (2 ingressos por R$ ${formatPriceBRL(ticket.price)}) para o Baile do Menino Rei.`;
+                    return `Olá! Quero ${quantity} Casadinha(s) (2 ingressos por R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 case 'casadinha-100':
-                    return `Olá! Quero a Casadinha + Combo (2 ingressos e 2 baldes por R$ ${formatPriceBRL(ticket.price)}) para o Baile do Menino Rei.`;
+                    return `Olá! Quero ${quantity} Casadinha(s) + Combo (2 ingressos e 2 baldes por R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 default:
-                    return `Olá! Quero o ingresso "${ticket.name}" (R$ ${formatPriceBRL(ticket.price)}) para o Baile do Menino Rei.`;
+                    return `Olá! Quero ${quantity} unidade(s) do ingresso "${ticket.name}" (R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
             }
         }
 
@@ -385,25 +412,88 @@ Vem com o par e economiza!</p>
             }
         }
 
+        function getCardQuantity(card) {
+            const quantity = Number(card.dataset.quantity || '1');
+            return Number.isFinite(quantity) && quantity > 0 ? Math.floor(quantity) : 1;
+        }
+
+        function updateCardQuantityUI(card) {
+            const quantityEl = card.querySelector('.qty-value');
+            if (quantityEl) {
+                quantityEl.textContent = String(getCardQuantity(card));
+            }
+        }
+
+        function updateSelectedTotal() {
+            if (!totalValueEl || !selectedTicket) return;
+
+            const label = getShortLabel(selectedTicket);
+            const quantity = Math.max(1, Number(selectedTicket.quantity) || 1);
+            const total = selectedTicket.price * quantity;
+            totalValueEl.textContent = `${label} x${quantity} • R$ ${formatPriceBRL(total)}`;
+        }
+
+        function selectTicketCard(card) {
+            ticketCards.forEach(c => {
+                c.classList.remove('neon-border-primary', 'bg-white/5');
+            });
+
+            card.classList.add('neon-border-primary', 'bg-white/5');
+
+            selectedTicket = {
+                id: card.dataset.planId,
+                name: card.dataset.planName,
+                price: parseFloat(card.dataset.planPrice || '0'),
+                description: card.dataset.planDescription || '',
+                quantity: getCardQuantity(card),
+            };
+
+            updateSelectedTotal();
+        }
+
         ticketCards.forEach(card => {
-            card.addEventListener('click', () => {
-                ticketCards.forEach(c => {
-                    c.classList.remove('neon-border-primary', 'bg-white/5');
+            if (!card.dataset.quantity) {
+                card.dataset.quantity = '1';
+            }
+            updateCardQuantityUI(card);
+
+            const minusBtn = card.querySelector('.qty-minus');
+            const plusBtn = card.querySelector('.qty-plus');
+
+            if (minusBtn) {
+                minusBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+
+                    const current = getCardQuantity(card);
+                    const next = Math.max(1, current - 1);
+                    card.dataset.quantity = String(next);
+                    updateCardQuantityUI(card);
+
+                    if (selectedTicket && selectedTicket.id === card.dataset.planId) {
+                        selectedTicket.quantity = next;
+                        updateSelectedTotal();
+                    }
                 });
+            }
 
-                card.classList.add('neon-border-primary', 'bg-white/5');
+            if (plusBtn) {
+                plusBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
 
-                selectedTicket = {
-                    id: card.dataset.planId,
-                    name: card.dataset.planName,
-                    price: parseFloat(card.dataset.planPrice || '0'),
-                    description: card.dataset.planDescription || '',
-                };
+                    const current = getCardQuantity(card);
+                    const next = current + 1;
+                    card.dataset.quantity = String(next);
+                    updateCardQuantityUI(card);
 
-                if (totalValueEl && selectedTicket) {
-                    const label = getShortLabel(selectedTicket);
-                    totalValueEl.textContent = `${label} • R$ ${formatPriceBRL(selectedTicket.price)}`;
-                }
+                    if (selectedTicket && selectedTicket.id === card.dataset.planId) {
+                        selectedTicket.quantity = next;
+                        updateSelectedTotal();
+                    }
+                });
+            }
+
+            card.addEventListener('click', () => {
+                selectTicketCard(card);
             });
         });
 
