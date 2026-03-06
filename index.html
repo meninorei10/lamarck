@@ -391,7 +391,7 @@ Vem com o par e economiza!</p>
                 case 'individual':
                     return `Olá! Quero ${quantity} Ingresso(s) Individual(is) (R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 case 'casadinha-15':
-                    return `Olá! Quero ${quantity} Casadinha(s) (2 ingressos por R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
+                    return `Olá! Quero ${quantity} Casadinha(s) (2 ingressos por R$ ${formatPriceBRL(ticket.price)}, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 case 'casadinha-100':
                     return `Olá! Quero ${quantity} Casadinha(s) + Combo (2 ingressos e 2 baldes por R$ ${formatPriceBRL(ticket.price)} cada, total R$ ${formatPriceBRL(total)}) para o Baile do Menino Rei.`;
                 default:
