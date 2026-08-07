@@ -343,17 +343,15 @@ src="fotos/wilson.jpeg"/>
         function getWhatsappMessage(ticket) {
             if (!ticket) return '';
 
-            const baseMessage = `Olá! Estou interessado em ${ticket.name} por R$ ${formatPriceBRL(ticket.price)} para a edição em Bequimão no dia 29/08.`;
-
             switch (ticket.id) {
                 case 'individual':
-                    return `${baseMessage} Pode me reservar 1 ingresso individual?`;
+                    return `Olá! Gostaria de reservar 1 ingresso individual para a edição em Bequimão, 29/08.`;
                 case 'casadinha-15':
-                    return `${baseMessage} Pode me reservar a casadinha para 2 pessoas?`;
+                    return `Olá! Gostaria de reservar a casadinha para 2 pessoas para a edição em Bequimão, 29/08.`;
                 case 'casadinha-100':
-                    return `${baseMessage} Pode me reservar a casadinha + combo?`;
+                    return `Olá! Gostaria de reservar a casadinha + combo para a edição em Bequimão, 29/08.`;
                 default:
-                    return baseMessage;
+                    return `Olá! Gostaria de reservar ${ticket.name} por R$ ${formatPriceBRL(ticket.price)} para a edição em Bequimão, 29/08.`;
             }
         }
 
