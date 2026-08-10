@@ -106,11 +106,11 @@ src="fotos/foto1.jpg"/>
                     </div>
 <div class="flex items-center gap-1.5">
 <span class="material-symbols-outlined text-secondary text-lg">location_on</span>
-                        NOSSO CANTO BOTECO - BEQUIMÃO - MA
+                        <a href="https://maps.app.goo.gl/D5ZhXjcoUfbXF7Z49?g_st=ac" target="_blank" rel="noopener noreferrer" class="underline decoration-secondary/30 hover:text-white">NOSSO CANTO BOTECO - BEQUIMÃO - MA</a>
                     </div>
 </div>
 <!-- Countdown Timer -->
-<div class="grid grid-cols-3 gap-3 pt-2">
+<div id="countdown-container" class="hidden grid grid-cols-3 gap-3 pt-2" style="display: none;">
 <div class="glass rounded-xl p-3 text-center border-primary/30">
 <div id="count-hours" class="text-2xl font-bold text-white">0</div>
 <div class="text-[10px] uppercase tracking-widest text-primary font-bold">Horas</div>
@@ -207,11 +207,13 @@ src="fotos/wilson.jpeg"/>
 </div>
 </div>
 </div>
+</section>
 
-</div>
-</div>
-</div>
-</a>
+<section class="px-6 mt-8">
+    <h3 class="font-bold text-lg">LOCALIZAÇÃO</h3>
+    <div class="overflow-hidden rounded-3xl border border-white/10 shadow-xl">
+        <iframe class="w-full min-h-[280px]" src="https://www.google.com/maps?q=NOSSO%20CANTO%20BOTECO%20BEQUIM%C3%83O%20MA&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
 </section>
 
 <section class="px-6 mt-10">
@@ -248,13 +250,23 @@ src="fotos/wilson.jpeg"/>
 </div>
 </div>
 <!-- Fixed Bottom CTA -->
-<div class="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] z-[100] bg-background-dark/95 backdrop-blur-xl border-t border-white/10" style="position: fixed !important;">
-<div class="max-w-md mx-auto flex items-center gap-4">
-<div class="shrink-0">
+<div id="buy-panel" class="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] z-[100] bg-background-dark/95 backdrop-blur-xl border-t border-white/10" style="position: fixed !important;">
+<div class="max-w-md mx-auto flex flex-col gap-3">
+<div class="flex items-center justify-between gap-4">
+<div>
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Quantidade</p>
+<div id="quantity-controls" class="inline-flex items-center rounded-full border border-white/10 bg-white/5 overflow-hidden" style="display: none;">
+<button id="quantity-decrease" type="button" class="px-3 py-2 text-white hover:bg-white/10 transition-colors">-</button>
+<input id="quantity-input" type="number" min="1" max="10" value="1" class="w-16 bg-transparent text-center text-white outline-none border-l border-r border-white/10 px-2" />
+<button id="quantity-increase" type="button" class="px-3 py-2 text-white hover:bg-white/10 transition-colors">+</button>
+</div>
+</div>
+<div class="text-right">
 <p class="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Total</p>
 <p id="total-value" class="text-xl font-bold text-white">Selecione o ingresso</p>
 </div>
-<button id="checkout-button" class="flex-1 h-14 bg-gradient-to-r from-primary via-[#ffe066] to-secondary rounded-2xl font-black uppercase tracking-widest text-slate-950 shadow-[0_0_30px_rgba(245,199,0,0.55)] flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+</div>
+<button id="checkout-button" class="h-14 bg-gradient-to-r from-primary via-[#ffe066] to-secondary rounded-2xl font-black uppercase tracking-widest text-slate-950 shadow-[0_0_30px_rgba(245,199,0,0.55)] flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
                 Finalizar
                 <span class="material-symbols-outlined">trending_flat</span>
 </button>
@@ -278,8 +290,13 @@ src="fotos/wilson.jpeg"/>
         const countHoursEl = document.getElementById('count-hours');
         const countMinutesEl = document.getElementById('count-minutes');
         const countSecondsEl = document.getElementById('count-seconds');
+        const countdownContainer = document.getElementById('countdown-container');
 
         const eventDate = new Date(2026, 7, 29, 21, 0, 0); // 29 de agosto de 2026, 21:00
+
+        if (countdownContainer) {
+            countdownContainer.style.display = 'none';
+        }
 
         function updateCountdown() {
             if (!countHoursEl || !countMinutesEl || !countSecondsEl) return;
@@ -309,6 +326,7 @@ src="fotos/wilson.jpeg"/>
         setInterval(updateCountdown, 1000); // atualiza a cada 1 segundo para horas/minutos/segundos
 
         let selectedTicket = null;
+        let selectedQuantity = 1;
 
         const WHATSAPP_PHONE = '5598981378687'; // Número oficial do WhatsApp
 
@@ -319,19 +337,19 @@ src="fotos/wilson.jpeg"/>
             });
         }
 
-        function getWhatsappMessage(ticket) {
+        function getWhatsappMessage(ticket, quantity) {
             if (!ticket) return '';
 
-            switch (ticket.id) {
-                case 'individual':
-                    return `Olá! Gostaria de reservar 1 ingresso individual para a edição em Bequimão, 29/08.`;
-                case 'casadinha-15':
-                    return `Olá! Gostaria de reservar a casadinha para 2 pessoas para a edição em Bequimão, 29/08.`;
-                case 'casadinha-100':
-                    return `Olá! Gostaria de reservar a casadinha + combo para a edição em Bequimão, 29/08.`;
-                default:
-                    return `Olá! Gostaria de reservar ${ticket.name} por R$ ${formatPriceBRL(ticket.price)} para a edição em Bequimão, 29/08.`;
+            if (ticket.id === 'individual') {
+                return quantity === 1
+                    ? 'Olá! Gostaria de reservar 1 ingresso individual para a edição em Bequimão, 29/08.'
+                    : `Olá! Gostaria de reservar ${quantity} ingressos individuais para a edição em Bequimão, 29/08.`;
             }
+
+            const ticketName = ticket.name.toLowerCase();
+            return quantity === 1
+                ? `Olá! Gostaria de reservar 1 ${ticketName} para a edição em Bequimão, 29/08.`
+                : `Olá! Gostaria de reservar ${quantity} ${ticketName}s para a edição em Bequimão, 29/08.`;
         }
 
         function getShortLabel(ticket) {
@@ -357,6 +375,11 @@ src="fotos/wilson.jpeg"/>
             soldOutModal.classList.add('hidden');
         }
 
+        const quantityInput = document.getElementById('quantity-input');
+        const quantityDecrease = document.getElementById('quantity-decrease');
+        const quantityIncrease = document.getElementById('quantity-increase');
+        const quantityControls = document.getElementById('quantity-controls');
+
         ticketCards.forEach(card => {
             card.addEventListener('click', () => {
                 const isSoldOut = card.dataset.soldOut === 'true';
@@ -379,12 +402,57 @@ src="fotos/wilson.jpeg"/>
                     description: card.dataset.planDescription || '',
                 };
 
-                if (totalValueEl && selectedTicket) {
-                    const label = getShortLabel(selectedTicket);
-                    totalValueEl.textContent = `${label} • R$ ${formatPriceBRL(selectedTicket.price)}`;
+                if (countdownContainer) {
+                    countdownContainer.style.display = 'grid';
                 }
+                if (quantityControls) {
+                    quantityControls.style.display = 'inline-flex';
+                }
+
+                updateTotalLabel();
             });
         });
+
+        function updateTotalLabel() {
+            if (!totalValueEl || !selectedTicket) return;
+
+            selectedQuantity = Math.max(1, Math.min(10, Number(quantityInput?.value || 1)));
+            if (quantityInput) {
+                quantityInput.value = selectedQuantity;
+            }
+
+            const totalPrice = selectedTicket.price * selectedQuantity;
+            const label = getShortLabel(selectedTicket);
+            totalValueEl.textContent = `${selectedQuantity}x ${label} • R$ ${formatPriceBRL(totalPrice)}`;
+        }
+
+        if (quantityDecrease) {
+            quantityDecrease.addEventListener('click', () => {
+                selectedQuantity = Math.max(1, selectedQuantity - 1);
+                if (quantityInput) {
+                    quantityInput.value = selectedQuantity;
+                }
+                updateTotalLabel();
+            });
+        }
+
+        if (quantityIncrease) {
+            quantityIncrease.addEventListener('click', () => {
+                selectedQuantity = Math.min(10, selectedQuantity + 1);
+                if (quantityInput) {
+                    quantityInput.value = selectedQuantity;
+                }
+                updateTotalLabel();
+            });
+        }
+
+        if (quantityInput) {
+            quantityInput.addEventListener('input', () => {
+                selectedQuantity = Math.max(1, Math.min(10, Number(quantityInput.value) || 1));
+                quantityInput.value = selectedQuantity;
+                updateTotalLabel();
+            });
+        }
 
         if (checkoutButton) {
             checkoutButton.addEventListener('click', () => {
@@ -394,7 +462,7 @@ src="fotos/wilson.jpeg"/>
                 }
 
                 const phone = WHATSAPP_PHONE.replace(/\D/g, '');
-                const message = getWhatsappMessage(selectedTicket);
+                const message = getWhatsappMessage(selectedTicket, selectedQuantity);
                 const encodedMessage = encodeURIComponent(message);
 
                 if (!phone) {
